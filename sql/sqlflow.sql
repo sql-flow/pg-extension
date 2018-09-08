@@ -32,7 +32,6 @@ SET search_path TO sqlflow, public;
 CREATE TYPE flow_type AS ENUM ('row', 'statement');
 CREATE TYPE flow_cond AS ENUM ('and', 'or', 'xor');
 
-
 --
 -- Workflow structure tables
 --
@@ -40,7 +39,7 @@ CREATE TABLE sqlflow.workflow
 (
     id serial,
     uref uuid NOT NULL,
-    name character varying(64) NOT NULL,
+    title character varying(64) NOT NULL,
     rel_table character varying(127) NOT NULL,
 	flow_type flow_type NOT NULL DEFAULT 'row',
     CONSTRAINT workflow_pkey PRIMARY KEY (id),
@@ -57,7 +56,7 @@ CREATE TABLE sqlflow.version
 (
     id serial,
     uref uuid NOT NULL,
-    name character varying(64) NOT NULL,
+    title character varying(64) NOT NULL,
 	workflow_id integer REFERENCES sqlflow.workflow ON DELETE CASCADE,
 	revision integer NOT NULL default 1,
 	CONSTRAINT version_pkey PRIMARY KEY (id),

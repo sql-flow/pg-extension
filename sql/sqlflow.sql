@@ -90,6 +90,25 @@ WITH (
 ALTER TABLE sqlflow.activity
     OWNER to sqlflow;
 
+
+CREATE TABLE sqlflow.transition
+(
+	id serial,
+	uref uuid NOT NULL,
+	title character varying(64) NOT NULL,
+	act_from_id integer REFERENCES sqlflow.activity ON DELETE CASCADE,
+	act_to_id integer REFERENCES sqlflow.activity ON DELETE CASCADE,
+	CONSTRAINT transition_pkey PRIMARY KEY (id),
+	CONSTRAINT transition_ref_uniq UNIQUE (uref)
+)
+WITH (
+    OIDS = FALSE
+);
+
+ALTER TABLE sqlflow.transition
+    OWNER to sqlflow;
+
+
 --
 -- Add comments on tables and columns
 --
@@ -103,8 +122,13 @@ COMMENT ON COLUMN sqlflow.version.revision IS 'Incremental workflow revision';
 
 COMMENT ON TABLE sqlflow.activity IS 'Activity on workflow';
 COMMENT ON COLUMN sqlflow.activity.title IS 'Activity title';
+COMMENT ON COLUMN sqlflow.activity.uref IS 'Unique reference, use on import/export';
 COMMENT ON COLUMN sqlflow.activity.version_id IS 'Activity link to version';
 COMMENT ON COLUMN sqlflow.activity.logic_in IS 'Operator logic use when enter to this activity';
 COMMENT ON COLUMN sqlflow.activity.logic_out IS 'Operator logic use when exit to this activity';
 COMMENT ON COLUMN sqlflow.activity.flow_start IS 'Is a start activity (unique per version)';
 COMMENT ON COLUMN sqlflow.activity.flow_stop IS 'Is a end activity (multiple per version)';
+
+COMMENT ON TABLE sqlflow.transition IS 'Transition is link between 2 activities';
+COMMENT ON COLUMN sqlflow.transition.title IS 'Activity title';
+COMMENT ON COLUMN sqlflow.transition.title IS 'Transition title';

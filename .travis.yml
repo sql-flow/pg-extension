@@ -50,4 +50,5 @@ script:
 
 after_success:
     - echo "Success OK"
+    - psql -f ./sql/uninstall_sqlflow.sql -U postgres myflow
 

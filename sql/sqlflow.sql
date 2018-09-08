@@ -126,6 +126,24 @@ WITH (
 
 ALTER TABLE sqlflow.task
     OWNER to sqlflow;
+
+CREATE TABLE sqlflow.condition
+(
+	id serial,
+	uref uuid NOT NULL,
+	title character varying(64) NOT NULL,
+	transition_id integer REFERENCES sqlflow.transition ON DELETE CASCADE,
+	cond_seq integer NOT NULL DEFAULT 1,
+	cond_func character varying(128) NOT NULL,
+	CONSTRAINT condition_pkey PRIMARY KEY (id),
+	CONSTRAINT condition_ref_uniq UNIQUE (uref)
+)
+WITH (
+    OIDS = FALSE
+);
+
+ALTER TABLE sqlflow.condition
+    OWNER to sqlflow;
 --
 -- Add comments on tables and columns
 --
@@ -155,3 +173,9 @@ COMMENT ON COLUMN sqlflow.task.title IS 'Activity task title';
 COMMENT ON COLUMN sqlflow.task.uref IS 'Unique reference, use on import/export';
 COMMENT ON COLUMN sqlflow.task.task_seq IS 'Task sequence on activity';
 COMMENT ON COLUMN sqlflow.task.task_code IS 'PLpgSQL code execute on this task';
+
+COMMENT ON TABLE sqlflow.condition IS 'Transition condition on workflow';
+COMMENT ON COLUMN sqlflow.condition.title IS 'Condition title';
+COMMENT ON COLUMN sqlflow.condition.uref IS 'Unique reference, use on import/export';
+COMMENT ON COLUMN sqlflow.condition.cond_seq IS 'Order to execute condition on transition';
+COMMENT ON COLUMN sqlflow.condition.cond_func IS 'Function to execute on this condition';

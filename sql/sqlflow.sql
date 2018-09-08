@@ -109,6 +109,23 @@ ALTER TABLE sqlflow.transition
     OWNER to sqlflow;
 
 
+CREATE TABLE sqlflow.task
+(
+	id serial,
+	uref uuid NOT NULL,
+	title character varying(64) NOT NULL,
+	activity_id integer REFERENCES sqlflow.activity ON DELETE CASCADE,
+	task_seq integer NOT NULL DEFAULT 1,
+	task_code text NOT NULL,
+	CONSTRAINT task_pkey PRIMARY KEY (id),
+	CONSTRAINT task_ref_uniq UNIQUE (uref)
+)
+WITH (
+    OIDS = FALSE
+);
+
+ALTER TABLE sqlflow.task
+    OWNER to sqlflow;
 --
 -- Add comments on tables and columns
 --
@@ -132,3 +149,9 @@ COMMENT ON COLUMN sqlflow.activity.flow_stop IS 'Is a end activity (multiple per
 COMMENT ON TABLE sqlflow.transition IS 'Transition is link between 2 activities';
 COMMENT ON COLUMN sqlflow.transition.title IS 'Activity title';
 COMMENT ON COLUMN sqlflow.transition.title IS 'Transition title';
+
+COMMENT ON TABLE sqlflow.task IS 'Activity task on workflow';
+COMMENT ON COLUMN sqlflow.task.title IS 'Activity task title';
+COMMENT ON COLUMN sqlflow.task.uref IS 'Unique reference, use on import/export';
+COMMENT ON COLUMN sqlflow.task.task_seq IS 'Task sequence on activity';
+COMMENT ON COLUMN sqlflow.task.task_code IS 'PLpgSQL code execute on this task';

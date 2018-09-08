@@ -30,8 +30,8 @@ before_install:
 
 before_script:
   - createuser -U postgres -s travis
-  - psql -c "CREATE USER sqlflow WITH PASSWORD 'sqlflow';" -U postgres
-  - psql -c 'create database myflow with owner sqlflow;' -U postgres
+  - psql -c "CREATE USER myflow WITH PASSWORD 'myflow';" -U postgres
+  - psql -c 'CREATE DATABASE myflow WITH OWNER myflow;' -U postgres
 
 env:
   matrix:
@@ -46,7 +46,7 @@ install:
     - echo "Install OK"
 
 script:
-    - echo "Test OK"
+    - psql -f .sql/sqlflow.sql -U postgres myflow
 
 after_success:
     - echo "Success OK"

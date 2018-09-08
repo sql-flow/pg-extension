@@ -70,11 +70,41 @@ WITH (
 ALTER TABLE sqlflow.version
     OWNER to sqlflow;
 
+CREATE TABLE sqlflow.activity
+(
+	id serial,
+	uref uuid NOT NULL,
+	title character varying(64) NOT NULL,
+	version_id integer REFERENCES sqlflow.version ON DELETE CASCADE,
+	logic_in flow_cond NOT NULL DEFAULT 'xor',
+	logic_out flow_cond NOT NULL DEFAULT 'xor',
+	flow_start boolean NOT NULL DEFAULT false,
+	flow_stop boolean NOT NULL DEFAULT false,
+	CONSTRAINT activity_pkey PRIMARY KEY (id),
+	CONSTRAINT activity_ref_uniq UNIQUE (uref)
+)
+WITH (
+    OIDS = FALSE
+);
+
+ALTER TABLE sqlflow.activity
+    OWNER to sqlflow;
+
 --
 -- Add comments on tables and columns
 --
-COMMENT ON TABLE sqlflow.workflow
-  IS 'Workflow process declaration';
+COMMENT ON TABLE sqlflow.workflow IS 'Workflow process declaration';
+COMMENT ON COLUMN sqlflow.workflow.title IS 'Workflow title';
 
-COMMENT ON TABLE sqlflow.version
-  IS 'Versionning workflow process';
+COMMENT ON TABLE sqlflow.version IS 'Versionning workflow process';
+COMMENT ON COLUMN sqlflow.version.title IS 'Version title';
+COMMENT ON COLUMN sqlflow.version.uref IS 'Unique reference, use on import/export';
+COMMENT ON COLUMN sqlflow.version.revision IS 'Incremental workflow revision';
+
+COMMENT ON TABLE sqlflow.activity IS 'Activity on workflow';
+COMMENT ON COLUMN sqlflow.activity.title IS 'Activity title';
+COMMENT ON COLUMN sqlflow.activity.version_id IS 'Activity link to version';
+COMMENT ON COLUMN sqlflow.activity.logic_in IS 'Operator logic use when enter to this activity';
+COMMENT ON COLUMN sqlflow.activity.logic_out IS 'Operator logic use when exit to this activity';
+COMMENT ON COLUMN sqlflow.activity.flow_start IS 'Is a start activity (unique per version)';
+COMMENT ON COLUMN sqlflow.activity.flow_stop IS 'Is a end activity (multiple per version)';

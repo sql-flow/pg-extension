@@ -46,8 +46,8 @@ install:
     - echo "Install OK"
 
 script:
-    - psql -f ./sql/sqlflow-structure.sql -U postgres myflow
-    - psql -f ./sql/sqlflow-instance.sql -U postgres myflow
+    - psql -v "ON_ERROR_STOP=1" -f ./sql/sqlflow-structure.sql -U postgres myflow
+    - psql -v "ON_ERROR_STOP=1" -f ./sql/sqlflow-instance.sql -U postgres myflow
 
 after_success:
     - echo "Success OK"

@@ -99,6 +99,7 @@ CREATE TABLE sqlflow.transition
 	title character varying(64) NOT NULL,
 	act_from_id integer REFERENCES sqlflow.activity ON DELETE CASCADE,
 	act_to_id integer REFERENCES sqlflow.activity ON DELETE CASCADE,
+	trans_cond text NOT NULL DEFAULT 'true',
 	CONSTRAINT transition_pkey PRIMARY KEY (id),
 	CONSTRAINT transition_ref_uniq UNIQUE (uref)
 )

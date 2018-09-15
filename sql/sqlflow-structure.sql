@@ -31,7 +31,7 @@ SET search_path TO sqlflow, public;
 --
 CREATE TYPE flow_type AS ENUM ('row', 'statement');
 CREATE TYPE flow_cond AS ENUM ('and', 'or', 'xor');
-CREATE TYPE flow_state AS ENUM ('init', 'progress', 'complete', 'cancelled', 'waiting')
+CREATE TYPE flow_state AS ENUM ('init', 'progress', 'complete', 'cancelled', 'waiting');
 
 --
 -- Workflow structure tables

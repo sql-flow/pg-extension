@@ -42,7 +42,7 @@ CREATE TABLE sqlflow.workflow
     uref uuid NOT NULL,
     title character varying(64) NOT NULL,
     rel_table character varying(127) NOT NULL,
-	flow_type flow_type NOT NULL DEFAULT 'row',
+    flow_type flow_type NOT NULL DEFAULT 'row',
     CONSTRAINT workflow_pkey PRIMARY KEY (id),
     CONSTRAINT workflow_ref_uniq UNIQUE (uref)
 )
@@ -52,17 +52,17 @@ WITH (
 
 ALTER TABLE sqlflow.workflow
     OWNER to sqlflow;
-	
+
 CREATE TABLE sqlflow.version
 (
     id serial,
     uref uuid NOT NULL,
     title character varying(64) NOT NULL,
-	workflow_id integer REFERENCES sqlflow.workflow ON DELETE CASCADE,
-	revision integer NOT NULL default 1,
-	CONSTRAINT version_pkey PRIMARY KEY (id),
-	CONSTRAINT version_ref_uniq UNIQUE (uref),
-	CONSTRAINT version_revision_uniq UNIQUE (workflow_id, revision)
+    workflow_id integer REFERENCES sqlflow.workflow ON DELETE CASCADE,
+    revision integer NOT NULL default 1,
+    CONSTRAINT version_pkey PRIMARY KEY (id),
+    CONSTRAINT version_ref_uniq UNIQUE (uref),
+    CONSTRAINT version_revision_uniq UNIQUE (workflow_id, revision)
 )
 WITH (
     OIDS = FALSE
@@ -73,16 +73,16 @@ ALTER TABLE sqlflow.version
 
 CREATE TABLE sqlflow.activity
 (
-	id serial,
-	uref uuid NOT NULL,
-	title character varying(64) NOT NULL,
-	version_id integer REFERENCES sqlflow.version ON DELETE CASCADE,
-	logic_in flow_cond NOT NULL DEFAULT 'xor',
-	logic_out flow_cond NOT NULL DEFAULT 'xor',
-	flow_start boolean NOT NULL DEFAULT false,
-	flow_stop boolean NOT NULL DEFAULT false,
-	CONSTRAINT activity_pkey PRIMARY KEY (id),
-	CONSTRAINT activity_ref_uniq UNIQUE (uref)
+    id serial,
+    uref uuid NOT NULL,
+    title character varying(64) NOT NULL,
+    version_id integer REFERENCES sqlflow.version ON DELETE CASCADE,
+    logic_in flow_cond NOT NULL DEFAULT 'xor',
+    logic_out flow_cond NOT NULL DEFAULT 'xor',
+    flow_start boolean NOT NULL DEFAULT false,
+    flow_stop boolean NOT NULL DEFAULT false,
+    CONSTRAINT activity_pkey PRIMARY KEY (id),
+    CONSTRAINT activity_ref_uniq UNIQUE (uref)
 )
 WITH (
     OIDS = FALSE
@@ -94,14 +94,14 @@ ALTER TABLE sqlflow.activity
 
 CREATE TABLE sqlflow.transition
 (
-	id serial,
-	uref uuid NOT NULL,
-	title character varying(64) NOT NULL,
-	act_from_id integer REFERENCES sqlflow.activity ON DELETE CASCADE,
-	act_to_id integer REFERENCES sqlflow.activity ON DELETE CASCADE,
-	trans_cond text NOT NULL DEFAULT 'true',
-	CONSTRAINT transition_pkey PRIMARY KEY (id),
-	CONSTRAINT transition_ref_uniq UNIQUE (uref)
+    id serial,
+    uref uuid NOT NULL,
+    title character varying(64) NOT NULL,
+    act_from_id integer REFERENCES sqlflow.activity ON DELETE CASCADE,
+    act_to_id integer REFERENCES sqlflow.activity ON DELETE CASCADE,
+    trans_cond text NOT NULL DEFAULT 'true',
+    CONSTRAINT transition_pkey PRIMARY KEY (id),
+    CONSTRAINT transition_ref_uniq UNIQUE (uref)
 )
 WITH (
     OIDS = FALSE
@@ -113,14 +113,14 @@ ALTER TABLE sqlflow.transition
 
 CREATE TABLE sqlflow.task
 (
-	id serial,
-	uref uuid NOT NULL,
-	title character varying(64) NOT NULL,
-	activity_id integer REFERENCES sqlflow.activity ON DELETE CASCADE,
-	task_seq integer NOT NULL DEFAULT 1,
-	task_code text NOT NULL,
-	CONSTRAINT task_pkey PRIMARY KEY (id),
-	CONSTRAINT task_ref_uniq UNIQUE (uref)
+    id serial,
+    uref uuid NOT NULL,
+    title character varying(64) NOT NULL,
+    activity_id integer REFERENCES sqlflow.activity ON DELETE CASCADE,
+    task_seq integer NOT NULL DEFAULT 1,
+    task_code text NOT NULL,
+    CONSTRAINT task_pkey PRIMARY KEY (id),
+    CONSTRAINT task_ref_uniq UNIQUE (uref)
 )
 WITH (
     OIDS = FALSE
@@ -131,14 +131,14 @@ ALTER TABLE sqlflow.task
 
 CREATE TABLE sqlflow.condition
 (
-	id serial,
-	uref uuid NOT NULL,
-	title character varying(64) NOT NULL,
-	transition_id integer REFERENCES sqlflow.transition ON DELETE CASCADE,
-	cond_seq integer NOT NULL DEFAULT 1,
-	cond_func character varying(128) NOT NULL,
-	CONSTRAINT condition_pkey PRIMARY KEY (id),
-	CONSTRAINT condition_ref_uniq UNIQUE (uref)
+    id serial,
+    uref uuid NOT NULL,
+    title character varying(64) NOT NULL,
+    transition_id integer REFERENCES sqlflow.transition ON DELETE CASCADE,
+    cond_seq integer NOT NULL DEFAULT 1,
+    cond_func character varying(128) NOT NULL,
+    CONSTRAINT condition_pkey PRIMARY KEY (id),
+    CONSTRAINT condition_ref_uniq UNIQUE (uref)
 )
 WITH (
     OIDS = FALSE

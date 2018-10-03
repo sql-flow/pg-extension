@@ -8,11 +8,11 @@ SET search_path TO sqlflow, public;
 CREATE TABLE sqlflow.instance
 (
     id bigserial,
-	-- workflow_id integer REFERENCES sqlflow.workflow ON DELETE CASCADE,
-	version_id integer REFERENCES sqlflow.version ON DELETE CASCADE ON UPDATE CASCADE,
+    -- workflow_id integer REFERENCES sqlflow.workflow ON DELETE CASCADE,
+    version_id integer REFERENCES sqlflow.version ON DELETE CASCADE ON UPDATE CASCADE,
     rel_table character varying(127) NOT NULL,
-	flow_type flow_type NOT NULL DEFAULT 'row',
-	flow_state flow_state NOT NULL DEFAULT 'init',
+    flow_type flow_type NOT NULL DEFAULT 'row',
+    flow_state flow_state NOT NULL DEFAULT 'init',
     CONSTRAINT instance_pkey PRIMARY KEY (id)
 )
 WITH (
@@ -21,15 +21,14 @@ WITH (
 
 ALTER TABLE sqlflow.instance
     OWNER to sqlflow;
-	
+ 
 CREATE TABLE sqlflow.instance_activity
 (
-	id bigserial,
-	instance_id bigint REFERENCES sqlflow.instance ON DELETE CASCADE ON UPDATE CASCADE,
-	flow_state flow_state NOT NULL DEFAULT 'init',
-	tasks json DEFAULT '{}',
+    id bigserial,
+    instance_id bigint REFERENCES sqlflow.instance ON DELETE CASCADE ON UPDATE CASCADE,
+    flow_state flow_state NOT NULL DEFAULT 'init',
+    tasks json DEFAULT '{}',
     CONSTRAINT instance_activity_pkey PRIMARY KEY (id)
-	
 )
 WITH (
     OIDS = FALSE
@@ -40,11 +39,11 @@ ALTER TABLE sqlflow.instance_activity
 
 CREATE TABLE sqlflow.instance_transition
 (
-	id bigserial,
-	instance_id bigint REFERENCES sqlflow.instance ON DELETE CASCADE ON UPDATE CASCADE,
-	flow_state flow_state NOT NULL DEFAULT 'init',
-	conditions json DEFAULT '{}',
-	CONSTRAINT instance_transition_pkey PRIMARY KEY (id)
+    id bigserial,
+    instance_id bigint REFERENCES sqlflow.instance ON DELETE CASCADE ON UPDATE CASCADE,
+    flow_state flow_state NOT NULL DEFAULT 'init',
+    conditions json DEFAULT '{}',
+    CONSTRAINT instance_transition_pkey PRIMARY KEY (id)
 )
 WITH (
     OIDS = FALSE
@@ -52,7 +51,7 @@ WITH (
 
 ALTER TABLE sqlflow.instance_transition
     OWNER to sqlflow;
-	
+        
 /*
 --
 -- Query to retrieve tasks (instance_activity) 
@@ -61,22 +60,22 @@ ALTER TABLE sqlflow.instance_transition
 select json_object_keys(col1) as condition_id,
        (col1->json_object_keys(col1)->'id')::text::int as cond_id, 
        (col1->json_object_keys(col1)->'state')::text as cond_state,
-	   (col1->json_object_keys(col1)->'result')::text as cond_result
+           (col1->json_object_keys(col1)->'result')::text as cond_result
 from
-	(select '{"1": {"id": 1512, "state": "complete", "result": true}, 
-	          "2": {"id": 1623, "state": "waiting", "result": false},
-	          "3": {"id": 5467, "state": "progress", "result": false}
-	 }'::json as col1, 1 as col2 ) x
+        (select '{"1": {"id": 1512, "state": "complete", "result": true}, 
+                  "2": {"id": 1623, "state": "waiting", "result": false},
+                  "3": {"id": 5467, "state": "progress", "result": false}
+         }'::json as col1, 1 as col2 ) x
 ORDER BY 1
 */
 
 CREATE TABLE sqlflow.instance_eventlog
 (
-	id bigserial,
-	instance_id bigint REFERENCES sqlflow.instance ON DELETE CASCADE ON UPDATE CASCADE,
-	event_time timestamp with time zone NOT NULL DEFAULT now(),
-	description text NOT NULL,
-	CONSTRAINT instance_eventlog_pkey PRIMARY KEY (id)
+    id bigserial,
+    instance_id bigint REFERENCES sqlflow.instance ON DELETE CASCADE ON UPDATE CASCADE,
+    event_time timestamp with time zone NOT NULL DEFAULT now(),
+    description text NOT NULL,
+    CONSTRAINT instance_eventlog_pkey PRIMARY KEY (id)
 )
 WITH (
     OIDS = FALSE
@@ -84,10 +83,10 @@ WITH (
 
 ALTER TABLE sqlflow.instance_eventlog
     OWNER to sqlflow;
-	
+        
 --
 -- Add comments on tables and columns
---	
+--      
 COMMENT ON TABLE sqlflow.instance IS 'Workflow instance declaration';
 COMMENT ON COLUMN sqlflow.instance.version_id IS 'Workflow instance link version';
 

@@ -39,7 +39,7 @@ CREATE TYPE flow_state AS ENUM ('init', 'progress', 'complete', 'cancelled', 'wa
 CREATE TABLE sqlflow.workflow
 (
     id serial,
-    uref uuid NOT NULL,
+    uref character varying(36) NOT NULL,
     title character varying(64) NOT NULL,
     rel_table character varying(127) NOT NULL,
     flow_type flow_type NOT NULL DEFAULT 'row',
@@ -56,7 +56,7 @@ ALTER TABLE sqlflow.workflow
 CREATE TABLE sqlflow.version
 (
     id serial,
-    uref uuid NOT NULL,
+    uref character varying(36) NOT NULL,
     title character varying(64) NOT NULL,
     workflow_id integer REFERENCES sqlflow.workflow ON DELETE CASCADE,
     revision integer NOT NULL default 1,
@@ -74,7 +74,7 @@ ALTER TABLE sqlflow.version
 CREATE TABLE sqlflow.activity
 (
     id serial,
-    uref uuid NOT NULL,
+    uref character varying(36) NOT NULL,
     title character varying(64) NOT NULL,
     version_id integer REFERENCES sqlflow.version ON DELETE CASCADE,
     logic_in flow_cond NOT NULL DEFAULT 'xor',
@@ -95,7 +95,7 @@ ALTER TABLE sqlflow.activity
 CREATE TABLE sqlflow.transition
 (
     id serial,
-    uref uuid NOT NULL,
+    uref character varying(36) NOT NULL,
     title character varying(64) NOT NULL,
     act_from_id integer REFERENCES sqlflow.activity ON DELETE CASCADE,
     act_to_id integer REFERENCES sqlflow.activity ON DELETE CASCADE,
@@ -114,7 +114,7 @@ ALTER TABLE sqlflow.transition
 CREATE TABLE sqlflow.task
 (
     id serial,
-    uref uuid NOT NULL,
+    uref character varying(36) NOT NULL,
     title character varying(64) NOT NULL,
     activity_id integer REFERENCES sqlflow.activity ON DELETE CASCADE,
     task_seq integer NOT NULL DEFAULT 1,
@@ -132,7 +132,7 @@ ALTER TABLE sqlflow.task
 CREATE TABLE sqlflow.condition
 (
     id serial,
-    uref uuid NOT NULL,
+    uref character varying(36) NOT NULL,
     title character varying(64) NOT NULL,
     transition_id integer REFERENCES sqlflow.transition ON DELETE CASCADE,
     cond_seq integer NOT NULL DEFAULT 1,

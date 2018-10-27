@@ -49,8 +49,11 @@ install:
 script:
     - psql -v "ON_ERROR_STOP=1" -f ./sql/sqlflow-structure.sql -U postgres myflow
     - psql -v "ON_ERROR_STOP=1" -f ./sql/sqlflow-instance.sql -U postgres myflow
+    - psql -v "ON_ERROR_STOP=1" -f ./sql/sqlflow-functions.sql -U postgres myflow
+    - pg_regress --inputdir=test --load-language=plpgsql --dbname=myflow
 
 after_success:
     - echo "Success OK"
     - psql -f ./sql/uninstall_sqlflow.sql -U postgres myflow
+    - if test -f regression.diffs; then cat regression.diffs; fi
 

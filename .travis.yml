@@ -50,7 +50,7 @@ script:
     - psql -v "ON_ERROR_STOP=1" -f ./sql/sqlflow-structure.sql -U postgres myflow
     - psql -v "ON_ERROR_STOP=1" -f ./sql/sqlflow-instance.sql -U postgres myflow
     - psql -v "ON_ERROR_STOP=1" -f ./sql/sqlflow-functions.sql -U postgres myflow
-    - make check
+    - ls -l /usr/lib/postgresql/$PGVERSION/lib/pgxs/src/test/regress/
 
 after_success:
     - echo "Success OK"

@@ -34,6 +34,7 @@ before_script:
   - psql -c 'CREATE DATABASE myflow WITH OWNER myflow;' -U postgres
 
 env:
+  - DBFLOW=myflow
   matrix:
     - PGVERSION=9.4
     - PGVERSION=9.5
@@ -47,13 +48,13 @@ install:
     - echo "Install OK"
 
 script:
-    - psql -v "ON_ERROR_STOP=1" -f ./sql/sqlflow-structure.sql -U postgres myflow
-    - psql -v "ON_ERROR_STOP=1" -f ./sql/sqlflow-instance.sql -U postgres myflow
-    - psql -v "ON_ERROR_STOP=1" -f ./sql/sqlflow-functions.sql -U postgres myflow
+    - psql -v "ON_ERROR_STOP=1" -f ./sql/sqlflow-structure.sql -U postgres $DBFLOW
+    - psql -v "ON_ERROR_STOP=1" -f ./sql/sqlflow-instance.sql -U postgres $DBFLOW
+    - psql -v "ON_ERROR_STOP=1" -f ./sql/sqlflow-functions.sql -U postgres $DBFLOW
     - /usr/lib/postgresql/$PGVERSION/lib/pgxs/src/test/regress/pg_regress --help
 
 after_success:
     - echo "Success OK"
-    - psql -f ./sql/uninstall_sqlflow.sql -U postgres myflow
+    - psql -f ./sql/uninstall_sqlflow.sql -U postgres $DBFLOW
     - if test -f regression.diffs; then cat regression.diffs; fi
 

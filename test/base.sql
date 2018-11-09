@@ -12,8 +12,6 @@ SELECT has_type('sqlflow', 'flow_state');
 SELECT has_table('sqlflow', 'workflow');
 SELECT has_column('sqlflow', 'workflow', 'id', 'id columns exists')
 
--- Table
-
 -- Finish the tests and clean up.
 SELECT * FROM finish();
 ROLLBACK;

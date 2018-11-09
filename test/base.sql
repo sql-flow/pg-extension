@@ -2,11 +2,13 @@
 BEGIN;
 SELECT plan(1);
 
--- Run the tests.
-SELECT pass( 'My test passed, w00t!' );
+SELECT has_type('sqlflow', 'flow_type');
+SELECT has_type('sqlflow', 'flow_cond');
+SELECT has_type('sqlflow', 'flow_state');
 
 SELECT has_schema('sqlflow');
 
+-- Table
 
 -- Finish the tests and clean up.
 SELECT * FROM finish();

@@ -1,6 +1,0 @@
-\set ECHO none
-BEGIN;
-
-SELECT 1;
-
-ROLLBACK;

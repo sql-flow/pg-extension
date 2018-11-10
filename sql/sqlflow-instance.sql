@@ -8,7 +8,6 @@ SET search_path TO sqlflow, public;
 CREATE TABLE sqlflow.instance
 (
     id bigserial,
-    -- workflow_id integer REFERENCES sqlflow.workflow ON DELETE CASCADE,
     version_id integer REFERENCES sqlflow.version ON DELETE CASCADE ON UPDATE CASCADE,
     rel_table character varying(127) NOT NULL,
     flow_type flow_type NOT NULL DEFAULT 'row',

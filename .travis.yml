@@ -10,30 +10,9 @@ addons:
     packages:
       - expect-dev  # provides unbuffer utility
 
-before_install:
- - psql --version
- - sudo /etc/init.d/postgresql stop
- - sudo apt-get -y --purge remove postgresql libpq-dev libpq5 postgresql-client-common postgresql-common
- - sudo rm -rf /var/lib/postgresql
- - wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
- - sudo sh -c "echo deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main $PGVERSION >> /etc/apt/sources.list.d/postgresql.list"
- - sudo sh -c "echo deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg-testing main $PGVERSION >> /etc/apt/sources.list.d/postgresql.list"
- - sudo apt-get update -qq
- - sudo apt-get -y -o Dpkg::Options::=--force-confdef -o Dpkg::Options::="--force-confnew" install postgresql-$PGVERSION postgresql-server-dev-$PGVERSION
- - sudo chmod 777 /etc/postgresql/$PGVERSION/main/pg_hba.conf
- - sudo echo "local   all         postgres                          trust" > /etc/postgresql/$PGVERSION/main/pg_hba.conf
- - sudo echo "local   all         all                               trust" >> /etc/postgresql/$PGVERSION/main/pg_hba.conf
- - sudo echo "host    all         all         128.0.0.1/32          trust" >> /etc/postgresql/$PGVERSION/main/pg_hba.conf
- - sudo echo "host    all         all         ::1/128               trust" >> /etc/postgresql/$PGVERSION/main/pg_hba.conf
- - sudo /etc/init.d/postgresql restart
- - psql --version
-
-before_script:
-  - createuser -U postgres -s travis
-  - psql -c "CREATE USER myflow WITH PASSWORD 'myflow';" -U postgres
-  - psql -c 'CREATE DATABASE myflow WITH OWNER myflow;' -U postgres
-
 env:
+  global:
+    - DBFLOW=myflow
   matrix:
     - PGVERSION=9.4
     - PGVERSION=9.5
@@ -41,16 +20,42 @@ env:
     - PGVERSION=10
     - PGVERSION=11
 
+before_install:
+  - psql --version
+  - sudo /etc/init.d/postgresql stop
+  - sudo apt-get -y --purge remove postgresql libpq-dev libpq5 postgresql-client-common postgresql-common
+  - sudo rm -rf /var/lib/postgresql
+  - wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+  - sudo sh -c "echo deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main $PGVERSION >> /etc/apt/sources.list.d/postgresql.list"
+  - sudo sh -c "echo deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg-testing main $PGVERSION >> /etc/apt/sources.list.d/postgresql.list"
+  - sudo apt-get update -qq
+  - sudo apt-get -y -o Dpkg::Options::=--force-confdef -o Dpkg::Options::="--force-confnew" install postgresql-$PGVERSION postgresql-server-dev-$PGVERSION postgresql-$PGVERSION-pgtap
+  - sudo chmod 777 /etc/postgresql/$PGVERSION/main/pg_hba.conf
+  - sudo echo "local   all         postgres                          trust" > /etc/postgresql/$PGVERSION/main/pg_hba.conf
+  - sudo echo "local   all         all                               trust" >> /etc/postgresql/$PGVERSION/main/pg_hba.conf
+  - sudo echo "host    all         all         128.0.0.1/32          trust" >> /etc/postgresql/$PGVERSION/main/pg_hba.conf
+  - sudo echo "host    all         all         ::1/128               trust" >> /etc/postgresql/$PGVERSION/main/pg_hba.conf
+  - sudo /etc/init.d/postgresql restart
+  - psql --version
+
+before_script:
+  - createuser -U postgres -s travis
+  - psql -c "CREATE USER myflow WITH PASSWORD 'myflow';" -U postgres
+  - psql -c 'CREATE DATABASE myflow WITH OWNER myflow;' -U postgres
+  - psql -c 'CREATE EXTENSION pgtap;' -U postgres -d $DBFLOW
+
 install:
-    - git clone https://github.com/sql-flow/pg-extension.git $HOME/pg-extension
-    - export PATH=$HOME/pg-extension/scripts:$PATH
-    - echo "Install OK"
+  - git clone https://github.com/sql-flow/pg-extension.git $HOME/pg-extension
+  - export PATH=$HOME/pg-extension/scripts:$PATH
+  - echo "Install OK"
 
 script:
-    - psql -v "ON_ERROR_STOP=1" -f ./sql/sqlflow-structure.sql -U postgres myflow
-    - psql -v "ON_ERROR_STOP=1" -f ./sql/sqlflow-instance.sql -U postgres myflow
+  - psql -v "ON_ERROR_STOP=1" -f ./sql/sqlflow-structure.sql -U postgres $DBFLOW
+  - psql -v "ON_ERROR_STOP=1" -f ./sql/sqlflow-instance.sql -U postgres $DBFLOW
+  - psql -v "ON_ERROR_STOP=1" -f ./sql/sqlflow-functions.sql -U postgres $DBFLOW
+  - pg_prove -U postgres -d $DBFLOW test/*.sql
 
 after_success:
-    - echo "Success OK"
-    - psql -f ./sql/uninstall_sqlflow.sql -U postgres myflow
+  - echo "Success OK"
+  - psql -f ./sql/uninstall_sqlflow.sql -U postgres $DBFLOW
 

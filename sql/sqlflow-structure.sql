@@ -6,6 +6,7 @@
 --
 -- Add user to manage sqlflow object s in database
 --
+DROP ROLE IF EXISTS sqlflow;
 CREATE ROLE sqlflow WITH
   NOLOGIN
   NOSUPERUSER
